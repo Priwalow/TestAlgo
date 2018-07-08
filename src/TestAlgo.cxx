@@ -181,7 +181,7 @@ StatusCode TestAlgo::execute() {
   }
 
   m_cout_col ++;
-  if(evtRecEvent->totalCharged()<3 || evtRecTrkCol->size()<3 || evtRecEvent->totalTracks()>99 || evtRecTrkCol->size()>99) return StatusCode::SUCCESS;
+  if(evtRecEvent->totalCharged()<2 || evtRecTrkCol->size()<2 || evtRecEvent->totalTracks()>99 || evtRecTrkCol->size()>99) return StatusCode::SUCCESS;
   m_cout_charge ++;
 
   // Asign four-momentum with KalmanTrack
