@@ -214,20 +214,15 @@ StatusCode TestAlgo::execute() {
     if(m_vr0 >= m_vr0cut) continue;
     iGood.push_back(i);
     nCharge += mdcTrk->charge();
-    if(mdcTrk->p()<1.0){ if((*itTrk)->isEmcShowerValid()) return sc; }
+    if(mdcTrk->p()<1.0) return sc;
     else{
       if((*itTrk)->isEmcShowerValid()) m_lep_matched ++;
       RecEmcShower *emcTrk = (*itTrk)->emcShower();
+      else continue;
     }
-    else continue;
+
     if(mdcTrk->charge()>0)
     {
-      if(mdcTrk->p()<1.0)
-      {
-	     return sc;
-      }
-      else
-      {
        mdcTrk->setPidType(RecMdcKalTrack::electron);
 	     m_lv_pos = mdcTrk->p4(xmass[0]);
        m_pos_charge = mdcTrk->charge();
@@ -235,16 +230,9 @@ StatusCode TestAlgo::execute() {
        m_pos_cTheta = m_lv_pos.vect().cosTheta();
        m_pos_Eemc = emcTrk->energy();
 	     m_num[1] ++;
-      }
     }
     else
     {
-      if(mdcTrk->p()<1.0)
-      {
-	     return sc;
-      }
-      else
-      {
 	     mdcTrk->setPidType(RecMdcKalTrack::electron);
 	     m_lv_ele = mdcTrk->p4(xmass[0]);
        m_el_charge = mdcTrk->charge();
@@ -252,7 +240,6 @@ StatusCode TestAlgo::execute() {
        m_el_cTheta = m_lv_ele.vect().cosTheta();
        m_el_Eemc = emcTrk->energy();
 	     m_num[0] ++;
-      }
     }
   }
 
