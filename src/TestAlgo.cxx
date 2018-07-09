@@ -98,8 +98,8 @@ StatusCode TestAlgo::initialize(){
       status = m_tuple1->addItem ("vr0",   m_vr0);
       status = m_tuple1->addItem ("cosdang", m_elpos_cdang);
       status = m_tuple1->addItem ("eveflag", m_event_flag);
-      status = m_tuple1->addItem ("eveflag", m_run);
-      status = m_tuple1->addItem ("eveflag", m_event);
+      status = m_tuple1->addItem ("run", m_run);
+      status = m_tuple1->addItem ("event", m_event);
     }
     else    {
       log << MSG::ERROR << "    Cannot book N-tuple:" << long(m_tuple1) << endmsg;
@@ -181,7 +181,8 @@ StatusCode TestAlgo::execute() {
   }
 
   m_cout_col ++;
-  if(evtRecEvent->totalCharged()<2 || evtRecTrkCol->size()<2 || evtRecEvent->totalTracks()>99 || evtRecTrkCol->size()>99) return StatusCode::SUCCESS;
+  if(evtRecEvent->totalCharged()<2 || evtRecEvent->totalCharged()>2) return StatusCode::SUCCESS;
+  //if(evtRecEvent->totalCharged()<3 || evtRecTrkCol->size()<3 || evtRecEvent->totalTracks()>99 || evtRecTrkCol->size()>99) return StatusCode::SUCCESS;
   m_cout_charge ++;
 
   // Asign four-momentum with KalmanTrack
@@ -273,245 +274,19 @@ StatusCode TestAlgo::execute() {
   }
   m_cout_mom ++;
 
+  
   // dangle between leptons
   m_elpos_cdang = m_lv_ele.vect().cosTheta(m_lv_pos.vect());
   m_run = run;
   m_event = event;
 
+  
 
   if(m_subsample_flag) setFilterPassed(true);
   else if(m_elpos_cdang<m_ee_cdang_cut) setFilterPassed(true);
   //cout << "passed" << endl;
+  
   m_tuple1->write();
-  //MC information
-/*  SmartDataPtr<Event::McParticleCol> mcParticleCol(eventSvc(), "/Event/MC/McParticleCol");
-  if(m_run<0){
-    int m_numParticle(0), m_true_pid(0);
-    if(!mcParticleCol){
-      log << MSG::ERROR << "Could not retrieve McParticelCol" << endreq;
-      return StatusCode::FAILURE;
-    }
-    else{
-      bool psipDecay(false);
-      int rootIndex(-1);
-      Event::McParticleCol::iterator iter_mc = mcParticleCol->begin();
-      for (; iter_mc != mcParticleCol->end(); iter_mc++){
-        if ((*iter_mc)->primaryParticle()) continue;
-        if (!(*iter_mc)->decayFromGenerator()) continue;
-        //if ( ((*iter_mc)->mother()).trackIndex()<3 ) continue;
-        if ((*iter_mc)->particleProperty()==100443){
-          psipDecay = true;
-          rootIndex = (*iter_mc)->trackIndex();
-        }
-        if (!psipDecay) continue;
-        int mcidx = ((*iter_mc)->mother()).trackIndex() - rootIndex;
-        int pdgid = (*iter_mc)->particleProperty();
-        m_pdgid[m_numParticle] = pdgid;
-        m_motheridx[m_numParticle] = mcidx;
-        m_numParticle ++;
-
-	//if(!(*iter_mc)->leafParticle()) continue;
-	if((*iter_mc)->particleProperty() == 211) m_true_pionp = (*iter_mc)->initialFourMomentum().vect().mag();
-	if((*iter_mc)->particleProperty() == -211) m_true_pionm = (*iter_mc)->initialFourMomentum().vect().mag();
-      }
-      m_idxmc = m_numParticle;
-    }
-  }
-
-
-  m_tuple8->write();
-
-
-  // next is good photon selection
-  Vint iGam;  iGam.clear();
-  for(int i = evtRecEvent->totalCharged(); i< evtRecEvent->totalTracks(); i++) {
-    EvtRecTrackIterator itTrk=evtRecTrkCol->begin() + i;
-    if(!(*itTrk)->isEmcShowerValid()) continue;
-    RecEmcShower *emcTrk = (*itTrk)->emcShower();
-    Hep3Vector emcpos(emcTrk->x(), emcTrk->y(), emcTrk->z());
-    // find the nearest charged track
-    double dthe = 200.;
-    double dphi = 200.;
-    double dang = 200.;
-    for(int j = 0; j < evtRecEvent->totalCharged(); j++) {
-      EvtRecTrackIterator jtTrk = evtRecTrkCol->begin() + j;
-      if(!(*jtTrk)->isExtTrackValid()) continue;
-      RecExtTrack *extTrk = (*jtTrk)->extTrack();
-      if(extTrk->emcVolumeNumber() == -1) continue;
-      Hep3Vector extpos = extTrk->emcPosition();
-      //      double ctht = extpos.cosTheta(emcpos);
-      double angd = extpos.angle(emcpos);
-      double thed = extpos.theta() - emcpos.theta();
-      double phid = extpos.deltaPhi(emcpos);
-      thed = fmod(thed+CLHEP::twopi+CLHEP::twopi+pi, CLHEP::twopi) - CLHEP::pi;
-      phid = fmod(phid+CLHEP::twopi+CLHEP::twopi+pi, CLHEP::twopi) - CLHEP::pi;
-
-      if(fabs(thed) < fabs(dthe)) dthe = thed;
-      if(fabs(phid) < fabs(dphi)) dphi = phid;
-      if(angd < dang) dang = angd;
-    }
-    if(dang>=200) continue;
-    double eraw = emcTrk->energy();
-    dthe = dthe * 180 / (CLHEP::pi);
-    dphi = dphi * 180 / (CLHEP::pi);
-    dang = dang * 180 / (CLHEP::pi);
-    m_dthe = dthe;
-    m_dphi = dphi;
-    m_dang = dang;
-    m_eraw = eraw;
-    // if(eraw < m_energyThreshold) continue;
-    // if((fabs(dthe) < m_gammaThetaCut) && (fabs(dphi)<m_gammaPhiCut) ) continue;
-    // good photon cut will be set here
-    iGam.push_back((*itTrk)->trackId());
-  }
-  // Finish Good Photon Selection
-  m_nGam = iGam.size();
-  log << MSG::DEBUG << "num Good Photon " << m_nGam  << " , " <<evtRecEvent->totalNeutral()<<endreq;
-  m_tuple2->write();
-
-  //
-  // check dedx infomation
-  //
-  if(m_checkDedx) {
-    int m_dedx_cout(0);
-    for(int i = 0; i < nGood; i++) {
-      EvtRecTrackIterator  itTrk = evtRecTrkCol->begin() + iGood[i];
-      if(!(*itTrk)->isMdcDedxValid())continue;
-      RecMdcKalTrack *mdcTrk = (*itTrk)->mdcKalTrack();
-      RecMdcDedx *dedxTrk = (*itTrk)->mdcDedx();
-
-      m_ptrk = mdcTrk->p();
-      m_chie = dedxTrk->chiE();
-      m_chimu = dedxTrk->chiMu();
-      m_chipi = dedxTrk->chiPi();
-      m_chik = dedxTrk->chiK();
-      m_chip = dedxTrk->chiP();
-      m_ghit = dedxTrk->numGoodHits();
-      m_thit = dedxTrk->numTotalHits();
-      m_probPH = dedxTrk->probPH();
-      m_normPH = dedxTrk->normPH();
-
-      m_tuple3->write();
-    }
-  }
-
-  //
-  // check TOF infomation
-  //
-  if(m_checkTof) {
-    int m_endcap_cout(0), m_layer1_cout(0), m_layer2_cout(0);
-    for(int i = 0; i < nGood; i++) {
-      EvtRecTrackIterator  itTrk = evtRecTrkCol->begin() + iGood[i];
-      if(!(*itTrk)->isTofTrackValid()) continue;
-
-      RecMdcKalTrack *mdcTrk = (*itTrk)->mdcKalTrack();
-      SmartRefVector<RecTofTrack> tofTrkCol = (*itTrk)->tofTrack();
-
-      double ptrk = mdcTrk->p();
-
-      for( SmartRefVector<RecTofTrack>::iterator iter_tof = tofTrkCol.begin() ;iter_tof != tofTrkCol.end(); iter_tof++ ) {
-        TofHitStatus *status = new TofHitStatus;
-        status->setStatus((*iter_tof)->status());
-        if(!(status->is_barrel())){//endcap
-          if( !(status->is_counter()) ) continue; // ?
-          if( status->layer()!=0 ) continue;//layer1
-          double path = (*iter_tof)->path(); // ? the unit is cm
-          double tof  = (*iter_tof)->tof();  // the unit is ns/100
-          double ph   = (*iter_tof)->ph();
-          double rhit = (*iter_tof)->zrhit();
-          double qual = 0.0 + (*iter_tof)->quality();
-          double cntr = 0.0 + (*iter_tof)->tofID();
-          double texp[5];
-          for(int j = 0; j < 5; j++) {
-            double gb = xmass[j]/ptrk;
-            double beta = sqrt(1+gb*gb);
-            texp[j] = path*beta/velc; // the unit here is ns
-          }
-          m_cntr_etof  = cntr;
-          m_ptot_etof  = ptrk;
-	  m_path_etof = path;
-          m_ph_etof    = ph;
-          m_rhit_etof  = rhit;
-          m_qual_etof  = qual;
-	  m_tof_etof = tof;
-          m_te_etof    = tof - texp[0];
-          m_tmu_etof   = tof - texp[1];
-          m_tpi_etof   = tof - texp[2];
-          m_tk_etof    = tof - texp[3];
-          m_tp_etof    = tof - texp[4];
-
-          m_tuple4->write();
-        }
-        else {//barrel
-          if( !(status->is_counter()) ) continue; // ?
-          if(status->layer()==1){ //layer1
-            double path=(*iter_tof)->path(); // ?
-            double tof  = (*iter_tof)->tof();
-            double ph   = (*iter_tof)->ph();
-            double rhit = (*iter_tof)->zrhit();
-            double qual = 0.0 + (*iter_tof)->quality();
-            double cntr = 0.0 + (*iter_tof)->tofID();
-            double texp[5];
-            for(int j = 0; j < 5; j++) {
-            double gb = xmass[j]/ptrk;
-            double beta = sqrt(1+gb*gb);
-            texp[j] = path*beta/velc;
-            }
-
-            m_cntr_btof1  = cntr;
-            m_ptot_btof1 = ptrk;
-	    m_path_btof1 = path;
-            m_ph_btof1   = ph;
-            m_zhit_btof1  = rhit;
-            m_qual_btof1  = qual;
-	    m_tof_btof1 = tof;
-            m_te_btof1    = tof - texp[0];
-            m_tmu_btof1   = tof - texp[1];
-            m_tpi_btof1   = tof - texp[2];
-            m_tk_btof1    = tof - texp[3];
-            m_tp_btof1    = tof - texp[4];
-
-            m_tuple5->write();
-          }
-
-          if(status->layer()==2){//layer2
-            double path=(*iter_tof)->path(); // ?
-            double tof  = (*iter_tof)->tof();
-            double ph   = (*iter_tof)->ph();
-            double rhit = (*iter_tof)->zrhit();
-            double qual = 0.0 + (*iter_tof)->quality();
-            double cntr = 0.0 + (*iter_tof)->tofID();
-            double texp[5];
-            for(int j = 0; j < 5; j++) {
-            double gb = xmass[j]/ptrk;
-            double beta = sqrt(1+gb*gb);
-            texp[j] = path*beta/velc;
-            }
-
-            m_cntr_btof2  = cntr;
-            m_ptot_btof2 = ptrk;
-	    m_path_btof2 = path;
-            m_ph_btof2   = ph;
-            m_zhit_btof2  = rhit;
-            m_qual_btof2  = qual;
-	    m_tof_btof2 = tof;
-            m_te_btof2    = tof - texp[0];
-            m_tmu_btof2   = tof - texp[1];
-            m_tpi_btof2   = tof - texp[2];
-            m_tk_btof2    = tof - texp[3];
-            m_tp_btof2    = tof - texp[4];
-
-	    m_tuple6->write();
-          }
-        }
-
-        delete status;
-      }
-    } // loop all charged track
-  }  // check tof
-
-
-   */
     return StatusCode::SUCCESS;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
