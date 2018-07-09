@@ -227,7 +227,7 @@ StatusCode TestAlgo::execute() {
        m_pos_Eemc = emcTrk->energy();
 	     m_num[1] ++;
     }
-    else
+    else if(mdcTrk->charge()<0)
     {
 	     mdcTrk->setPidType(RecMdcKalTrack::electron);
 	     m_lv_ele = mdcTrk->p4(xmass[0]);
@@ -237,6 +237,7 @@ StatusCode TestAlgo::execute() {
        m_el_Eemc = emcTrk->energy();
 	     m_num[0] ++;
     }
+    else continue;
   }
 
   int nGood = iGood.size();
