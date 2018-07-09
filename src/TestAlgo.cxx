@@ -202,19 +202,19 @@ StatusCode TestAlgo::execute() {
   for(int i = 0; i < evtRecEvent->totalCharged(); i++)
   {
     EvtRecTrackIterator itTrk=evtRecTrkCol->begin() + i;
-    if(!(*itTrk)->isMdcKalTrackValid()) continue;
+    if(!(*itTrk)->isMdcKalTrackValid()) return sc;
     RecMdcKalTrack* mdcTrk = (*itTrk)->mdcKalTrack();
+    if(mdcTrk->p()<1.0 || !(*itTrk)->isEmcShowerValid()) return sc;
 
     m_vx0 = mdcTrk->x();
     m_vy0 = mdcTrk->y();
     m_vz0 = mdcTrk->z();
     m_vr0 = mdcTrk->r();
 
-    if(fabs(m_vz0) >= m_vz0cut) continue;
-    if(m_vr0 >= m_vr0cut) continue;
+    if(fabs(m_vz0) >= m_vz0cut)  return sc;
+    if(m_vr0 >= m_vr0cut) return sc;
     iGood.push_back(i);
     nCharge += mdcTrk->charge();
-    if(mdcTrk->p()<1.0 || !(*itTrk)->isEmcShowerValid()) continue;
     RecEmcShower *emcTrk = (*itTrk)->emcShower();
 
     if(mdcTrk->charge()>0)
@@ -237,7 +237,7 @@ StatusCode TestAlgo::execute() {
        m_el_Eemc = emcTrk->energy();
 	     m_num[0] ++;
     }
-    else continue;
+    else return sc;
   }
 
   int nGood = iGood.size();
