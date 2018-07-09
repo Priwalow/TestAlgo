@@ -44,7 +44,15 @@ private:
   NTuple::Item<double>  m_vy0;
   NTuple::Item<double>  m_vz0;
   NTuple::Item<double>  m_vr0;
-  NTuple::Item<double> m_elpos_cdang;
+  NTuple::Item<double>  m_elpos_cdang;
+  NTuple::Item<double>  m_el_charge;
+  NTuple::Item<double>  m_el_p;
+  NTuple::Item<double>  m_el_cTheta;
+  NTuple::Item<double>  m_el_Eemc;
+  NTuple::Item<double>  m_pos_charge;
+  NTuple::Item<double>  m_pos_p;
+  NTuple::Item<double>  m_pos_cTheta;
+  NTuple::Item<double>  m_pos_Eemc;
   NTuple::Item<long> m_event_flag;
   NTuple::Item<long> m_run;
   NTuple::Item<long> m_event;
