@@ -214,15 +214,8 @@ StatusCode TestAlgo::execute() {
     if(m_vr0 >= m_vr0cut) continue;
     iGood.push_back(i);
     nCharge += mdcTrk->charge();
-    if(mdcTrk->p()<1.0) return sc;
-    else{
-      if((*itTrk)->isEmcShowerValid())
-      {
-        m_lep_matched ++;
-        RecEmcShower *emcTrk = (*itTrk)->emcShower();
-      }
-      else continue;
-    }
+    if(mdcTrk->p()<1.0 || !(*itTrk)->isEmcShowerValid()) continue;
+    RecEmcShower *emcTrk = (*itTrk)->emcShower();
 
     if(mdcTrk->charge()>0)
     {
