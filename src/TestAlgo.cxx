@@ -216,8 +216,11 @@ StatusCode TestAlgo::execute() {
     nCharge += mdcTrk->charge();
     if(mdcTrk->p()<1.0) return sc;
     else{
-      if((*itTrk)->isEmcShowerValid()) m_lep_matched ++;
-      RecEmcShower *emcTrk = (*itTrk)->emcShower();
+      if((*itTrk)->isEmcShowerValid())
+      {
+        m_lep_matched ++;
+        RecEmcShower *emcTrk = (*itTrk)->emcShower();
+      }
       else continue;
     }
 
