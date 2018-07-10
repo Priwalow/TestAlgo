@@ -82,6 +82,15 @@ StatusCode TestAlgo::initialize(){
   log << MSG::INFO << "in initialize()" << endmsg;
 
   StatusCode status;
+  try
+  {
+	  fEvent.make_tuple(this, "FILE1/event","Some signal");
+  }
+  catch(std::runtime_error & error)
+  {
+	  log << MSG::ERROR << error.what() << endmsg;
+	  return StatusCode::FAILURE;
+  }
 
   NTuplePtr nt1(ntupleSvc(), "FILE1/tr");
   if ( nt1 ) m_tuple1 = nt1;
@@ -132,6 +141,7 @@ StatusCode TestAlgo::execute() {
   //save the events passed selection to a new file
   setFilterPassed(false);
 
+  SmartDataPtr<Event::McParticleCol> mcParticleCol(eventSvc(),  EventModel::MC::McParticleCol);
   SmartDataPtr<Event::EventHeader> eventHeader(eventSvc(),"/Event/EventHeader");
   if(!eventHeader){
     log << MSG::ERROR << "EventHeader not found" << endreq;
@@ -263,6 +273,19 @@ StatusCode TestAlgo::execute() {
 
   if(m_cdang<m_ee_cdang_cut) setFilterPassed(true);
   //cout << "passed" << endl;
+    fEvent.run = eventHeader->runNumber();
+    fEvent.event = eventHeader->eventNumber();
+    fEvent.time = eventHeader->time();
+    fEvent.ntrack = 2;
+    for(int i = 0; i <2; i++)
+    {
+      EvtRecTrackIterator itTrk=evtRecTrkCol->begin() + i;
+      fEvent.Pid.fill(i,*itTrk);
+      if(eventHeader->runNumber() < 0)
+      {
+        fEvent.McTruth.fill(i,*itTrk,mcParticleCol);
+      }
+    }
 
   m_tuple1->write();
     return StatusCode::SUCCESS;

@@ -7,7 +7,7 @@
 #include "GaudiKernel/NTuple.h"
 #include "trkInfo.h"
 
-#include "RootMcTruth.h"
+#include "RootEvent.h"
 
 class TestAlgo : public Algorithm {
 
@@ -18,7 +18,7 @@ public:
   StatusCode finalize();
 
 private:
-  RootMcTruth mcTruth;
+  RootEvent fEvent;
 
   // Declare r0, z0 cut for charged tracks
   double m_vr0cut;
