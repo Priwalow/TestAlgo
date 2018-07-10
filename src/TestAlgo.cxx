@@ -97,14 +97,14 @@ StatusCode TestAlgo::initialize(){
       status = m_tuple1->addItem ("vz0",   m_vz0);
       status = m_tuple1->addItem ("vr0",   m_vr0);
       status = m_tuple1->addItem ("cosdang", m_elpos_cdang);
-      status = m_tuple1->addItem ("elcharge",   m_el_charge);
-      status = m_tuple1->addItem ("elp",   m_el_p);
-      status = m_tuple1->addItem ("elcost",   m_el_cTheta);
-      status = m_tuple1->addItem ("elEemc",   m_el_Eemc);
-      status = m_tuple1->addItem ("poscharge",   m_pos_charge);
-      status = m_tuple1->addItem ("posp",   m_pos_p);
-      status = m_tuple1->addItem ("poscost",   m_pos_cTheta);
-      status = m_tuple1->addItem ("posEemc",   m_pos_Eemc);
+      status = m_tuple1->addItem ("elcharge", m_el_charge);
+      status = m_tuple1->addItem ("elp", m_el_p);
+      status = m_tuple1->addItem ("elcost", m_el_cTheta);
+      status = m_tuple1->addItem ("elEemc", m_el_Eemc);
+      status = m_tuple1->addItem ("poscharge", m_pos_charge);
+      status = m_tuple1->addItem ("posp", m_pos_p);
+      status = m_tuple1->addItem ("poscost", m_pos_cTheta);
+      status = m_tuple1->addItem ("posEemc", m_pos_Eemc);
       status = m_tuple1->addItem ("eveflag", m_event_flag);
       status = m_tuple1->addItem ("run", m_run);
       status = m_tuple1->addItem ("event", m_event);
@@ -204,7 +204,7 @@ StatusCode TestAlgo::execute() {
     EvtRecTrackIterator itTrk=evtRecTrkCol->begin() + i;
     if(!(*itTrk)->isMdcKalTrackValid()) return sc;
     RecMdcKalTrack* mdcTrk = (*itTrk)->mdcKalTrack();
-    if(mdcTrk->p()<1.0 || !(*itTrk)->isEmcShowerValid()) return sc;
+    if(!(*itTrk)->isEmcShowerValid()) return sc;
 
     m_vx0 = mdcTrk->x();
     m_vy0 = mdcTrk->y();
@@ -219,8 +219,6 @@ StatusCode TestAlgo::execute() {
 
     if(mdcTrk->charge()>0)
     {
-       mdcTrk->setPidType(RecMdcKalTrack::electron);
-	     m_lv_pos = mdcTrk->p4(xmass[0]);
        m_pos_charge = mdcTrk->charge();
        m_pos_p = mdcTrk->p();
        m_pos_cTheta = m_lv_pos.vect().cosTheta();
@@ -229,8 +227,6 @@ StatusCode TestAlgo::execute() {
     }
     else if(mdcTrk->charge()<0)
     {
-	     mdcTrk->setPidType(RecMdcKalTrack::electron);
-	     m_lv_ele = mdcTrk->p4(xmass[0]);
        m_el_charge = mdcTrk->charge();
        m_el_p = mdcTrk->p();
        m_el_cTheta = m_lv_ele.vect().cosTheta();
@@ -245,37 +241,15 @@ StatusCode TestAlgo::execute() {
   if(nGood!=2 || nCharge) return sc;
   m_cout_nGood ++;
 
-  double m_ep_ratio = 0;
+/*  double m_ep_ratio = 0;
   for(int i=0; i< evtRecEvent->totalTracks(); i++){
     EvtRecTrackIterator itTrk=evtRecTrkCol->begin() + i;
     if(!(*itTrk)->isEmcShowerValid()) continue;
     RecEmcShower *emcTrk = (*itTrk)->emcShower();
     m_ep_ratio += emcTrk->energy();
-  }
+  }*/
 
-  if(m_ep_ratio < m_distin_emuon) return sc;
-
-/*  HepLorentzVector m_lv_lab(0.04,0,0,3.686);
-  if(nGood==2){
-    if(nCharge) return sc;
-    m_event_flag = 2;
-  }
-  else{
-    if(m_num[0]>1 || m_num[1]>1) return sc;
-    if(m_num[0]==0){
-      if(nCharge == -1) return sc;
-      m_lv_ele = m_lv_lab - m_lv_pos;
-      if(m_lv_ele.vect().cosTheta()>m_cosThetaCut) return sc;
-      m_event_flag = 0;
-    }
-    if(m_num[1]==0){
-      if(nCharge == 1) return sc;
-      m_lv_pos = m_lv_lab - m_lv_ele;
-      if(m_lv_pos.vect().cosTheta()>m_cosThetaCut) return sc;
-      m_event_flag = 1;
-    }
-  }
-  m_cout_mom ++;*/
+//  if(m_ep_ratio < m_distin_emuon) return sc;
 
 
   // dangle between leptons
