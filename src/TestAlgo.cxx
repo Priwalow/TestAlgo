@@ -286,6 +286,7 @@ StatusCode TestAlgo::execute() {
         fEvent.McTruth.fill(i,*itTrk,mcParticleCol);
       }
     }
+    fEvent.write();
 
   m_tuple1->write();
     return StatusCode::SUCCESS;

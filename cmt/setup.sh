@@ -19,8 +19,8 @@ cmtsetupstatus=0
 if test $? != 0 ; then
   cmtsetupstatus=2
 fi
-export LD_LIBRARY_PATH=$TESTALGOROOT/x86_64-slc6-gcc46-opt/:$LD_LIBRARY_PATH
 /bin/rm -f ${cmtTestAlgotempfile}
 unset cmtTestAlgotempfile
+export LD_LIBRARY_PATH=$TESTALGOROOT/x86_64-slc6-gcc46-opt/:$LD_LIBRARY_PATH
 return $cmtsetupstatus
 

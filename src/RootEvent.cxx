@@ -14,9 +14,9 @@
 //
 // =====================================================================================
 
-#include "RootEvent.h"
-#include "PhysConst.h"
-#include "Utils.h"
+#include "../TestAlgo/RootEvent.h"
+#include "../TestAlgo/PhysConst.h"
+#include "../TestAlgo/Utils.h"
 
 RootEvent::~RootEvent(void)
 {

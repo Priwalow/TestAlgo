@@ -112,7 +112,7 @@ inline std::list<EvtRecTrack*> createGoodChargedTrackList(
 
 inline std::list<EvtRecTrack*> createGoodEmcChargedTrackList(
 		SelectionConfig & cfg, 
-    const std::list<EvtRecTrack*> & good_charged_tracks
+    std::list<EvtRecTrack*> & good_charged_tracks
 		)
 {
   std::list<EvtRecTrack*> emc_good_charged_tracks;
