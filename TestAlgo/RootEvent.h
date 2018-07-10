@@ -18,11 +18,11 @@
 
 #include <vector>
 
-#include "RootEvent/RootTuple.h"
-#include "RootEvent/RootTrack.h"
+#include "RootTuple.h"
+#include "RootTrack.h"
 
 //#include "RootEvent/RootPid.h"
-#include "RootEvent/RootMcTruth.h"
+#include "RootMcTruth.h"
 
 #include "CLHEP/Vector/LorentzVector.h"
 
@@ -37,8 +37,6 @@ class RootEvent : public RootTuple
 		NTuple::Item<long>    run; //run number
 		NTuple::Item<long>    event; //event number 
 		NTuple::Item<long>    time; //time of the event
-		NTuple::Item<long>    ngood_charged_track;     //number of good charged tracks in event
-		NTuple::Item<long>    ngood_neutral_track;     //number of good neutral tracks in event
 		NTuple::Item<long>    ntrack;  //number of tracks (must be 2)
 		RootTracks T; //track information (momentum, vertex, muon depth...)
 		//RootPid Pid; //particle id for track
@@ -58,10 +56,7 @@ class RootEvent : public RootTuple
 			tuple->addItem ("run", run);
 			tuple->addItem ("event", event);
 			tuple->addItem ("time", time);
-			tuple->addItem ("channel", channel);
 			tuple->addItem ("ntrack", ntrack, 0,3);
-			tuple->addItem ("nctrack", nctrack, 0,10);
-			tuple->addItem ("nntrack", nntrack, 0,10);
 			T.add_to_tuple(tuple,ntrack); 
 			McTruth.add_to_tuple(tuple,ntrack);
 		};
