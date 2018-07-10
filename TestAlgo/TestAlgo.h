@@ -32,28 +32,26 @@ private:
   // declare the cut angle between two leptons (e+ e-)
    double m_ee_cdang_cut;
 
-  // declare whether pick up sub-sample
-  bool m_subsample_flag, m_trigger_flag;
 
   // declare energy/momentum to distinguish e and muon
   double m_distin_emuon;
 
   // define Ntuples here
-  NTuple::Tuple*  m_tuple1;      // charged track vertex
-  NTuple::Item<double>  m_vx0;
+  NTuple::Tuple*  m_tuple1;
+  NTuple::Item<double>  m_vx0; // track vertex
   NTuple::Item<double>  m_vy0;
   NTuple::Item<double>  m_vz0;
   NTuple::Item<double>  m_vr0;
-  NTuple::Item<double>  m_elpos_cdang;
-  NTuple::Item<double>  m_el_charge;
-  NTuple::Item<double>  m_el_p;
-  NTuple::Item<double>  m_el_cTheta;
-  NTuple::Item<double>  m_el_Eemc;
-  NTuple::Item<double>  m_pos_charge;
-  NTuple::Item<double>  m_pos_p;
-  NTuple::Item<double>  m_pos_cTheta;
-  NTuple::Item<double>  m_pos_Eemc;
-  NTuple::Item<long> m_event_flag;
+  NTuple::Item<double>  m_cdang;
+  NTuple::Item<double>  m_q1; //charge
+  NTuple::Item<double>  m_p1; //pulse
+  NTuple::Item<double>  m_cost1; //cosTheta
+  NTuple::Item<double>  m_Eemc1; //energy in electromagnetic calorimeter
+  NTuple::Item<double>  m_q2;
+  NTuple::Item<double>  m_p2;
+  NTuple::Item<double>  m_cost2;
+  NTuple::Item<double>  m_Eemc2;
+  NTuple::Item<long> m_event_flag; //0: e+e-; 1: mu+mu-; 2: pi+pi-; 3: gg
   NTuple::Item<long> m_run;
   NTuple::Item<long> m_event;
 };

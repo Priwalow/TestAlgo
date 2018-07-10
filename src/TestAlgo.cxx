@@ -1,4 +1,4 @@
-//e+e- --> e+e-
+//e+e- --> e+e-/mu+ mu-/pi+ pi-/g-g
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/AlgFactory.h"
 #include "GaudiKernel/ISvcLocator.h"
@@ -71,12 +71,8 @@ TestAlgo::TestAlgo(const std::string& name, ISvcLocator* pSvcLocator) :
   declareProperty("CheckDedx", m_checkDedx = true);
   declareProperty("CheckTof",  m_checkTof = true);
 
-  declareProperty("Subsample", m_subsample_flag=false);
-  declareProperty("Trigger", m_trigger_flag=false);
   declareProperty("DistinEMuon", m_distin_emuon=2.0);
 
-  declareProperty("EventRate", m_eventrate=false);
-  declareProperty("ChanDet", m_chan_det=1);
 }
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -87,25 +83,25 @@ StatusCode TestAlgo::initialize(){
 
   StatusCode status;
 
-  NTuplePtr nt1(ntupleSvc(), "FILE1/bbsc");
+  NTuplePtr nt1(ntupleSvc(), "FILE1/tr");
   if ( nt1 ) m_tuple1 = nt1;
   else {
-    m_tuple1 = ntupleSvc()->book ("FILE1/bbsc", CLID_ColumnWiseTuple, "processed data");
+    m_tuple1 = ntupleSvc()->book ("FILE1/tr", CLID_ColumnWiseTuple, "processed data");
     if ( m_tuple1 )    {
       status = m_tuple1->addItem ("vx0",   m_vx0);
       status = m_tuple1->addItem ("vy0",   m_vy0);
       status = m_tuple1->addItem ("vz0",   m_vz0);
       status = m_tuple1->addItem ("vr0",   m_vr0);
-      status = m_tuple1->addItem ("cosdang", m_elpos_cdang);
-      status = m_tuple1->addItem ("elcharge", m_el_charge);
-      status = m_tuple1->addItem ("elp", m_el_p);
-      status = m_tuple1->addItem ("elcost", m_el_cTheta);
-      status = m_tuple1->addItem ("elEemc", m_el_Eemc);
-      status = m_tuple1->addItem ("poscharge", m_pos_charge);
-      status = m_tuple1->addItem ("posp", m_pos_p);
-      status = m_tuple1->addItem ("poscost", m_pos_cTheta);
-      status = m_tuple1->addItem ("posEemc", m_pos_Eemc);
-      status = m_tuple1->addItem ("eveflag", m_event_flag);
+      status = m_tuple1->addItem ("cosdang", m_cdang);
+      status = m_tuple1->addItem ("q1", m_q1);
+      status = m_tuple1->addItem ("p1", m_p1);
+      status = m_tuple1->addItem ("cost1", m_cost1);
+      status = m_tuple1->addItem ("Eemc1", m_Eemc1);
+      status = m_tuple1->addItem ("q2", m_q2);
+      status = m_tuple1->addItem ("p2", m_p2);
+      status = m_tuple1->addItem ("cost2", m_cost2);
+      status = m_tuple1->addItem ("Eemc2", m_Eemc2);
+      status = m_tuple1->addItem ("eveflag", m_event_flag); //-2: charged trk; -1: e+e-; 1: mu+mu-; 2: pi+pi-; 3: gg
       status = m_tuple1->addItem ("run", m_run);
       status = m_tuple1->addItem ("event", m_event);
     }
@@ -162,84 +158,90 @@ StatusCode TestAlgo::execute() {
     return StatusCode::SUCCESS;
   }
 
-  if(m_trigger_flag)
-  {
-    SmartDataPtr<TrigData> trigData(eventSvc(),EventModel::Trig::TrigData);
-    if (!trigData) {
-      log << MSG::FATAL << "Could not find Trigger Data for physics analysis" << endreq;
-      return StatusCode::FAILURE;
-    }
-    /// Print trigger information once:
-    log << MSG::DEBUG << "Trigger conditions: " << endreq;
-    for(int i=0; i < 48; i++){
-      log << MSG::DEBUG << "i:" << i << "  name:" << trigData->getTrigCondName(i) << "  cond:" << trigData->getTrigCondition(i) << endreq;
-    }
-    // test event rate
-    int m_trig_tot(0), m_trig_which(-1);
-    if(m_eventrate){
-      for(int j=0; j<16; j++){
-	       if(trigData->getTrigChannel(j)){
-	          m_trig_tot ++;
-	          m_trig_which = j+1;
-	       }
-      }
-      if(m_trig_tot==1 && m_trig_which==m_chan_det) m_cout_everat++;
-      return sc;
-    }
-  }
+
 
   m_cout_col ++;
-  if(evtRecEvent->totalCharged()!=2) return StatusCode::SUCCESS;
+  if(evtRecEvent->totalCharged()==2) m_event_flag=-2;
+  else if(evtRecEvent->totalCharged()==0 && evtRecEvent->totalNeutral()==2) m_event_flag=3;
+  else return sc;
+
+
   //if(evtRecEvent->totalCharged()<3 || evtRecTrkCol->size()<3 || evtRecEvent->totalTracks()>99 || evtRecTrkCol->size()>99) return StatusCode::SUCCESS;
   m_cout_charge ++;
 
   // Asign four-momentum with KalmanTrack
   Vint iGood; iGood.clear();
-  int m_num[2]={0,0}; // number of different particles: e-, e+
-  int nCharge = 0, m_lep_matched = 0;
-  HepLorentzVector m_lv_ele, m_lv_pos;
+  int m_pid[2]={0,0}; // particle id: 0: noid/-2:{charged-,chaged+}/-1:{e-, e+}/1:{mu-, mu+}/2:{pi-, pi+}/3: {g, g}
+  int nCharge = 0;
+  HepLorentzVector m_lv1, m_lv2;
 
-  for(int i = 0; i < evtRecEvent->totalCharged(); i++)
+  if(m_event_flag==-2)
   {
-    EvtRecTrackIterator itTrk=evtRecTrkCol->begin() + i;
-    if(!(*itTrk)->isMdcKalTrackValid()) return sc;
-    RecMdcKalTrack* mdcTrk = (*itTrk)->mdcKalTrack();
-    if(!(*itTrk)->isEmcShowerValid()) return sc;
-
-    m_vx0 = mdcTrk->x();
-    m_vy0 = mdcTrk->y();
-    m_vz0 = mdcTrk->z();
-    m_vr0 = mdcTrk->r();
-
-    if(fabs(m_vz0) >= m_vz0cut)  return sc;
-    if(m_vr0 >= m_vr0cut) return sc;
-    iGood.push_back(i);
-    nCharge += mdcTrk->charge();
-    RecEmcShower *emcTrk = (*itTrk)->emcShower();
-
-    if(mdcTrk->charge()>0)
+    for(int i = 0; i < evtRecEvent->totalCharged(); i++)
     {
-       m_pos_charge = mdcTrk->charge();
-       m_pos_p = mdcTrk->p();
-       m_pos_cTheta = m_lv_pos.vect().cosTheta();
-       m_pos_Eemc = emcTrk->energy();
-	     m_num[1] ++;
-    }
-    else if(mdcTrk->charge()<0)
-    {
-       m_el_charge = mdcTrk->charge();
-       m_el_p = mdcTrk->p();
-       m_el_cTheta = m_lv_ele.vect().cosTheta();
-       m_el_Eemc = emcTrk->energy();
-	     m_num[0] ++;
-    }
-    else return sc;
+      EvtRecTrackIterator itTrk=evtRecTrkCol->begin() + i;
+      if(!(*itTrk)->isMdcKalTrackValid()) return sc;
+      RecMdcKalTrack* mdcTrk = (*itTrk)->mdcKalTrack();
+      if(!(*itTrk)->isEmcShowerValid()) return sc;
+
+      m_vx0 = mdcTrk->x();
+      m_vy0 = mdcTrk->y();
+      m_vz0 = mdcTrk->z();
+      m_vr0 = mdcTrk->r();
+
+      if(fabs(m_vz0) >= m_vz0cut)  return sc;
+      if(m_vr0 >= m_vr0cut) return sc;
+      iGood.push_back(i);
+      nCharge += mdcTrk->charge();
+      RecEmcShower *emcTrk = (*itTrk)->emcShower();
+
+      if(mdcTrk->charge()>0)
+      {
+       m_q2 = mdcTrk->charge();
+       m_p2 = mdcTrk->p();
+       m_pid[1]=-2;
+       m_Eemc2 = emcTrk->energy();
+       if(m_Eemc2/m_p2<1.2 && m_Eemc2/m_p2>0.8)
+       {
+         m_pid[1]=-1;
+         m_lv2=mdcTrk->p4(me);
+         m_cost2 = m_lv2.vect().cosTheta();
+       }
+      }
+      else if(mdcTrk->charge()<0)
+      {
+        m_q1 = mdcTrk->charge();
+        m_p1 = mdcTrk->p();
+        m_pid[0]=-2;
+        m_Eemc1 = emcTrk->energy();
+        if(m_Eemc1/m_p1<1.2 && m_Eemc1/m_p1>0.8)
+        {
+          m_pid[0]=-1;
+          m_lv1=mdcTrk->p4(me);
+          m_cost1 = m_lv1.vect().cosTheta();
+        }
+        /*
+          distinguish mu+ mu-; pi+ pi-
+        */
+      }
+      else return sc;
+     }
   }
+  else
+  {
+
+  }
+
+
+
+
 
   int nGood = iGood.size();
   log << MSG::DEBUG << "With KalmanTrack, ngood, totcharge = " << nGood << " , " << nCharge << endreq;
   if(nGood!=2 || nCharge) return sc;
   m_cout_nGood ++;
+
+
 
 /*  double m_ep_ratio = 0;
   for(int i=0; i< evtRecEvent->totalTracks(); i++){
@@ -253,14 +255,13 @@ StatusCode TestAlgo::execute() {
 
 
   // dangle between leptons
-  m_elpos_cdang = m_lv_ele.vect().cosTheta(m_lv_pos.vect());
+  m_cdang = m_lv1.vect().cosTheta(m_lv2.vect());
   m_run = run;
   m_event = event;
 
 
 
-  if(m_subsample_flag) setFilterPassed(true);
-  else if(m_elpos_cdang<m_ee_cdang_cut) setFilterPassed(true);
+  if(m_cdang<m_ee_cdang_cut) setFilterPassed(true);
   //cout << "passed" << endl;
 
   m_tuple1->write();
