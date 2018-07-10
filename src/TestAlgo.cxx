@@ -280,6 +280,7 @@ StatusCode TestAlgo::execute() {
     for(int i = 0; i <2; i++)
     {
       EvtRecTrackIterator itTrk=evtRecTrkCol->begin() + i;
+      fEvent.fill(i,*itTrk);
       //fEvent.Pid.fill(i,*itTrk);
       if(eventHeader->runNumber() < 0)
       {
