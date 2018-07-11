@@ -130,7 +130,7 @@ StatusCode TestAlgo::execute()
     return StatusCode::SUCCESS;
   }
 
-  if(evtRecEvent->totalTracks()<2) return sc;
+  if(evtRecEvent->totalTracks()<2 || evtRecEvent->totalCharged()!=2) return sc;
 
   fEvent.run = eventHeader->runNumber();
   fEvent.event = eventHeader->eventNumber();
