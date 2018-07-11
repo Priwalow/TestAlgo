@@ -99,7 +99,6 @@ StatusCode TestAlgo::execute()
 
   MsgStream log(msgSvc(), name());
   log << MSG::INFO << "in execute()" << endreq;
-  m_cout_all ++;
   StatusCode sc=StatusCode::SUCCESS;
   //save the events passed selection to a new file
   setFilterPassed(false);
