@@ -2,7 +2,7 @@
 //
 //       Filename:  RootTrack
 //
-//    Description:  
+//    Description:
 //
 //        Version:  1.0
 //        Created:  27.10.2015 16:52:08
@@ -20,10 +20,10 @@
 
 struct RootTracks
 {
-	//NTuple::Item<long>    ntrack;  //size of 
+	//NTuple::Item<long>    ntrack;  //size of
 	NTuple::Array<long>   id; //id of the track
 	NTuple::Array<double> q; //charge of the track
-	NTuple::Array<double> E;
+	NTuple::Array<double> E; //energy in EMC
 	NTuple::Array<double> Ep;//E/p ratio
 	NTuple::Array<double> p;
 	NTuple::Array<double> px;
@@ -38,7 +38,7 @@ struct RootTracks
 	NTuple::Array<long> Nmuhit; //number of muon hits
 	virtual void add_to_tuple(NTuple::Tuple * tuple, NTuple::Item<long> & ntrack)
 	{
-		//tuple->addItem ("ntrack", ntrack); 
+		//tuple->addItem ("ntrack", ntrack);
 		tuple->addIndexedItem ("trackid",   ntrack, id);
 		tuple->addIndexedItem ("q",     ntrack, q);
 		tuple->addIndexedItem ("E",     ntrack, E);
