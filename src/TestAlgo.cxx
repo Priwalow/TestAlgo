@@ -141,6 +141,8 @@ StatusCode TestAlgo::execute()
     EvtRecTrackIterator itTrk=evtRecTrkCol->begin() + i;
     fEvent.fill(i,*itTrk);
     //fEvent.Pid.fill(i,*itTrk);
+
+
     if(eventHeader->runNumber() < 0)
     {
       fEvent.McTruth.fill(i,*itTrk,mcParticleCol);
