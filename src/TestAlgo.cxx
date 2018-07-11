@@ -56,8 +56,6 @@ const double PI = 3.1415926;
 typedef std::vector<int> Vint;
 typedef std::vector<HepLorentzVector> Vp4;
 
-// counter for efficiency
-static long m_cout_all(0), m_cout_col(0), m_cout_charge(0), m_cout_nGood(0), m_cout_mom(0), m_cout_everat(0);
 /////////////////////////////////////////////////////////////////////////////
 
 TestAlgo::TestAlgo(const std::string& name, ISvcLocator* pSvcLocator) :
@@ -94,7 +92,8 @@ StatusCode TestAlgo::initialize()
 }
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-StatusCode TestAlgo::execute() {
+StatusCode TestAlgo::execute()
+{
 
   //std::cout << "execute()" << std::endl;
 
@@ -131,7 +130,9 @@ StatusCode TestAlgo::execute() {
     log << MSG::ERROR << "EvtRecTrackCol" << endreq;
     return StatusCode::SUCCESS;
   }
-  
+
+  if(evtRecEvent->totalTracks()<2) return sc;
+
   fEvent.run = eventHeader->runNumber();
   fEvent.event = eventHeader->eventNumber();
   fEvent.time = eventHeader->time();
