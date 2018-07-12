@@ -144,7 +144,7 @@ StatusCode TestAlgo::execute()
   cfg.EMC_BARREL_MIN_ENERGY=0.025;
 
 
-  EvtRecTrack* nGood = createGoodNeutralTrackList(,evtRecEvent,evtRecTrkCol);
+  EvtRecTrack* nGood = createGoodNeutralTrackList(cfg,evtRecEvent,evtRecTrkCol);
   if (nGood.size()!=2) return sc;
 
   fEvent.run = eventHeader->runNumber();
@@ -159,7 +159,7 @@ for(int i = 0; i <2; i++)
 
     if(eventHeader->runNumber() < 0)
     {
-      fEvent.McTruth.fill(i,*itTrk,mcParticleCol);
+      fEvent.McTruth.fill(i,nGood[i],mcParticleCol);
     }
   }
   fEvent.write();
