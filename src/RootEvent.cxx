@@ -17,10 +17,7 @@
 #include "../TestAlgo/RootEvent.h"
 #include "../TestAlgo/PhysConst.h"
 #include "../TestAlgo/Utils.h"
-/*=Addition:=*/
-#include "CLHEP/Vector/ThreeVector.h"
-using CLHEP::Hep3Vector;
-/* ==========*/
+
 RootEvent::~RootEvent(void)
 {
 }
@@ -90,8 +87,8 @@ void RootEvent::fill(int i,  EvtRecTrack * track)
     T.q[i] = 0;
     T.E[i] = emcTrk->energy();
     Hep3Vector emcpos(emcTrk->x(), emcTrk->y(), emcTrk->z());
-    T.theta[i]= emcopos.theta() ;
-    T.phi[i]= emcopos.phi();
+    T.theta[i]= emcpos.theta() ;
+    T.phi[i]= emcpos.phi();
   }
   /* ==========*/
   if(track->isMucTrackValid())
