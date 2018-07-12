@@ -143,15 +143,14 @@ StatusCode TestAlgo::execute()
   cfg.EMC_ENDCUP_MIN_ENERGY=0.05;
   cfg.EMC_BARREL_MAX_COS_THETA=0.8;
   cfg.EMC_BARREL_MIN_ENERGY=0.025;
-  cout << "config is setted up, EMC_BARREL_MIN_ENERGY=" << cfg.EMC_BARREL_MIN_ENERGY << endl;
+
   std::list<EvtRecTrack*> nGood = createGoodNeutralTrackList(cfg,evtRecEvent,evtRecTrkCol);
   if (nGood.size()!=2) return sc;
-  cout << "Number of good neutral tracks:" << nGood.size() << endl;
+
   fEvent.run = eventHeader->runNumber();
   fEvent.event = eventHeader->eventNumber();
   fEvent.time = eventHeader->time();
   fEvent.ntrack = 2;
-
 
   for(int i = 0; i <2; i++)
   {

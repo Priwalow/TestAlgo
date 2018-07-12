@@ -84,11 +84,9 @@ void RootEvent::fill(int i,  EvtRecTrack * track)
   if(track->isEmcShowerValid())
   {
     RecEmcShower *emcTrk = track->emcShower();
-    T.q[i] = 0;
     T.E[i] = emcTrk->energy();
-    Hep3Vector emcpos(emcTrk->x(), emcTrk->y(), emcTrk->z());
-    T.theta[i]= emcpos.theta() ;
-    T.phi[i]= emcpos.phi();
+    T.theta[i]= emcTrk->theta() ;
+    T.phi[i]= emcTrk->phi();
   }
   /* ==========*/
   if(track->isMucTrackValid())
