@@ -159,10 +159,10 @@ StatusCode TestAlgo::execute()
     std::advance(itTrk, i);
     fEvent.fill(i,*itTrk);
     //fEvent.Pid.fill(i,*itTrk);
-    if(eventHeader->runNumber() < 0)
+    /*if(eventHeader->runNumber() < 0)
     {
       fEvent.McTruth.fill(i,*itTrk,mcParticleCol);
-    }
+    }*/
   }
   fEvent.write();
 
