@@ -40,7 +40,7 @@ typedef HepGeom::Point3D<double> HepPoint3D;
 #include "MdcRecEvent/RecMdcKalTrack.h"
 
 #include "../TestAlgo/TestAlgo.h"
-
+#include "../TestAlgo/Utils.h"
 #include <vector>
 //const double twopi = 6.2831853;
 
@@ -63,6 +63,11 @@ Algorithm(name, pSvcLocator) {
   //Declare the properties
   //declareProperty("Vr0cut", m_vr0cut=1.0);
   //declareProperty("Vz0cut", m_vz0cut=5.0);
+  declareProperty("EMC_ENDCUP_MIN_COS_THETA", EMC_ENDCUP_MIN_COS_THETA=0.86);
+  declareProperty("EMC_ENDCUP_MAX_COS_THETA", EMC_ENDCUP_MAX_COS_THETA=0.92);
+  declareProperty("EMC_ENDCUP_MIN_ENERGY", EMC_ENDCUP_MIN_ENERGY=0.05);
+  declareProperty("EMC_BARREL_MAX_COS_THETA", EMC_BARREL_MAX_COS_THETA=0.8);
+  declareProperty("EMC_BARREL_MIN_ENERGY", EMC_BARREL_MIN_ENERGY=0.025);
 }
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -130,15 +135,16 @@ StatusCode TestAlgo::execute()
     return StatusCode::SUCCESS;
   }
 
-  if(evtRecEvent->totalCharged()!=2) return sc;
+  if(evtRecEvent->totalCharged()!=0 || evtRecEvent->totalTracks()!=2) return sc;
 
   fEvent.run = eventHeader->runNumber();
   fEvent.event = eventHeader->eventNumber();
   fEvent.time = eventHeader->time();
   fEvent.ntrack = 2;
+
   for(int i = 0; i <2; i++)
   {
-    EvtRecTrackIterator itTrk=evtRecTrkCol->begin() + i;
+    EvtRecTrackIterator itTrk=createGoodNeutralTrackList()->begin() + i;
     fEvent.fill(i,*itTrk);
     //fEvent.Pid.fill(i,*itTrk);
 
