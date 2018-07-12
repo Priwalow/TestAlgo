@@ -144,7 +144,7 @@ StatusCode TestAlgo::execute()
   cfg.EMC_BARREL_MIN_ENERGY=0.025;
 
 
-  EvtRecTrack* nGood = createGoodNeutralTrackList(cfg,evtRecEvent,evtRecTrkCol);
+  std::list<EvtRecTrack*> nGood = createGoodNeutralTrackList(cfg,evtRecEvent,evtRecTrkCol);
   if (nGood.size()!=2) return sc;
 
   fEvent.run = eventHeader->runNumber();
