@@ -79,16 +79,17 @@ void RootEvent::fill(int i,  EvtRecTrack * track)
     T.vxy[i] = UNSET_VALUE;
     T.vz[i] = UNSET_VALUE;
     T.vphi[i] = UNSET_VALUE;
+    /*=Addition:=*/
+    if(track->isEmcShowerValid())
+    {
+      RecEmcShower *emcTrk = track->emcShower();
+      T.E[i] = emcTrk->energy();
+      T.theta[i]= emcTrk->theta() ;
+      T.phi[i]= emcTrk->phi();
+    }
+    /* ==========*/
   }
-  /*=Addition:=*/
-  if(track->isEmcShowerValid())
-  {
-    RecEmcShower *emcTrk = track->emcShower();
-    T.E[i] = emcTrk->energy();
-    T.theta[i]= emcTrk->theta() ;
-    T.phi[i]= emcTrk->phi();
-  }
-  /* ==========*/
+
   if(track->isMucTrackValid())
   {
     RecMucTrack *mucTrk = track->mucTrack();
