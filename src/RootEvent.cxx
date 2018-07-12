@@ -86,7 +86,7 @@ void RootEvent::fill(int i,  EvtRecTrack * track)
     RecEmcShower *emcTrk = track->emcShower();
     T.q[i] = 0;
     T.E[i] = emcTrk->energy();
-    Hep3Vector emcpos(emcTrk->x(), emcTrk->y(), emcTrk->z());
+    Hep3Vector emcpos = Hep3Vector(emcTrk->x(), emcTrk->y(), emcTrk->z());
     T.theta[i]= emcopos.theta() ;
     T.phi[i]= emcopos.phi();
   }

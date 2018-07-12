@@ -151,13 +151,13 @@ StatusCode TestAlgo::execute()
   fEvent.event = eventHeader->eventNumber();
   fEvent.time = eventHeader->time();
   fEvent.ntrack = 2;
+
+  EvtRecTrackIterator itTrk=nGood.begin();
   for(int i = 0; i <2; i++)
   {
-    EvtRecTrackIterator itTrk=nGood.begin() + i;
+    std::advance(itTrk, i);
     fEvent.fill(i,*itTrk);
     //fEvent.Pid.fill(i,*itTrk);
-
-
     if(eventHeader->runNumber() < 0)
     {
       fEvent.McTruth.fill(i,*itTrk,mcParticleCol);
