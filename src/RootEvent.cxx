@@ -17,7 +17,10 @@
 #include "../TestAlgo/RootEvent.h"
 #include "../TestAlgo/PhysConst.h"
 #include "../TestAlgo/Utils.h"
-
+/*=Addition:=*/
+#include "CLHEP/Vector/ThreeVector.h"
+using CLHEP::Hep3Vector;
+/* ==========*/
 RootEvent::~RootEvent(void)
 {
 }
