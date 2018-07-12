@@ -63,11 +63,11 @@ Algorithm(name, pSvcLocator) {
   //Declare the properties
   //declareProperty("Vr0cut", m_vr0cut=1.0);
   //declareProperty("Vz0cut", m_vz0cut=5.0);
-  declareProperty("EMC_ENDCUP_MIN_COS_THETA", EMC_ENDCUP_MIN_COS_THETA=0.86);
-  declareProperty("EMC_ENDCUP_MAX_COS_THETA", EMC_ENDCUP_MAX_COS_THETA=0.92);
-  declareProperty("EMC_ENDCUP_MIN_ENERGY", EMC_ENDCUP_MIN_ENERGY=0.05);
-  declareProperty("EMC_BARREL_MAX_COS_THETA", EMC_BARREL_MAX_COS_THETA=0.8);
-  declareProperty("EMC_BARREL_MIN_ENERGY", EMC_BARREL_MIN_ENERGY=0.025);
+  //declareProperty("EMC_ENDCUP_MIN_COS_THETA", EMC_ENDCUP_MIN_COS_THETA=0.86);
+  //declareProperty("EMC_ENDCUP_MAX_COS_THETA", EMC_ENDCUP_MAX_COS_THETA=0.92);
+  //declareProperty("EMC_ENDCUP_MIN_ENERGY", EMC_ENDCUP_MIN_ENERGY=0.05);
+  //declareProperty("EMC_BARREL_MAX_COS_THETA", EMC_BARREL_MAX_COS_THETA=0.8);
+  //declareProperty("EMC_BARREL_MIN_ENERGY", EMC_BARREL_MIN_ENERGY=0.025);
 }
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -136,18 +136,24 @@ StatusCode TestAlgo::execute()
   }
 
   if(evtRecEvent->totalCharged()!=0 || evtRecEvent->totalTracks()!=2) return sc;
-  EvtRecTrack* nGood = createGoodNeutralTrackList();
-  if (nGood -> totalTracks()!=2) return sc;
+  SelectionConfig cfg;
+  cfg.EMC_ENDCUP_MIN_COS_THETA=0.86;
+  cfg.EMC_ENDCUP_MAX_COS_THETA=0.92;
+  cfg.EMC_ENDCUP_MIN_ENERGY=0.05;
+  cfg.EMC_BARREL_MAX_COS_THETA=0.8;
+  cfg.EMC_BARREL_MIN_ENERGY=0.025;
+
+
+  EvtRecTrack* nGood = createGoodNeutralTrackList(,evtRecEvent,evtRecTrkCol);
+  if (nGood.size()!=2) return sc;
+
   fEvent.run = eventHeader->runNumber();
   fEvent.event = eventHeader->eventNumber();
   fEvent.time = eventHeader->time();
   fEvent.ntrack = 2;
-
-
-  for(int i = 0; i <2; i++)
+for(int i = 0; i <2; i++)
   {
-    EvtRecTrackIterator itTrk=nGood->begin() + i;
-    fEvent.fill(i,*itTrk);
+    fEvent.fill(i,nGood[i]);
     //fEvent.Pid.fill(i,*itTrk);
 
 
