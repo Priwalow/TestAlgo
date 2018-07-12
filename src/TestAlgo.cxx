@@ -136,15 +136,17 @@ StatusCode TestAlgo::execute()
   }
 
   if(evtRecEvent->totalCharged()!=0 || evtRecEvent->totalTracks()!=2) return sc;
-
+  EvtRecTrack* nGood = createGoodNeutralTrackList();
+  if (nGood -> totalTracks()!=2) return sc;
   fEvent.run = eventHeader->runNumber();
   fEvent.event = eventHeader->eventNumber();
   fEvent.time = eventHeader->time();
   fEvent.ntrack = 2;
 
+
   for(int i = 0; i <2; i++)
   {
-    EvtRecTrackIterator itTrk=createGoodNeutralTrackList()->begin() + i;
+    EvtRecTrackIterator itTrk=nGood->begin() + i;
     fEvent.fill(i,*itTrk);
     //fEvent.Pid.fill(i,*itTrk);
 
