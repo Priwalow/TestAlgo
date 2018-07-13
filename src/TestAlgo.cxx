@@ -135,7 +135,7 @@ StatusCode TestAlgo::execute()
     return StatusCode::SUCCESS;
   }
 
-  if(evtRecEvent->totalCharged()!=0) return sc;
+  if(evtRecEvent->totalCharged()!=0 || evtRecEvent->totalNeutral()!=2) return sc;
 
   SelectionConfig cfg;
   cfg.EMC_ENDCUP_MIN_COS_THETA=0.86;
