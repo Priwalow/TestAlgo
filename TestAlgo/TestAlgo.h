@@ -15,6 +15,7 @@ public:
   StatusCode finalize();
 
 private:
+  SelectionConfig cfg;
   RootEvent fEvent;
 /*  double EMC_ENDCUP_MIN_COS_THETA;
   double EMC_ENDCUP_MAX_COS_THETA;
