@@ -63,8 +63,6 @@ Algorithm(name, pSvcLocator) {
   //Declare the properties
   //declareProperty("Vr0cut", m_vr0cut=1.0);
   //declareProperty("Vz0cut", m_vz0cut=5.0);
-  declareProperty("MIN_CHARGED_TRACKS", cfg.MIN_CHARGED_TRACKS=2);
- declareProperty("MAX_CHARGED_TRACKS", cfg.MAX_CHARGED_TRACKS=2);
  //good charged track configuration
  declareProperty("IP_MAX_Z",      cfg.IP_MAX_Z = 10.0); //cm
  declareProperty("IP_MAX_RHO",    cfg.IP_MAX_RHO = 1.0); //cm
@@ -78,7 +76,7 @@ Algorithm(name, pSvcLocator) {
  declareProperty("EMC_ENDCUP_MAX_COS_THETA", cfg.EMC_ENDCUP_MAX_COS_THETA = 0.92);
  //barrel calorimeter
  declareProperty("EMC_BARREL_MAX_COS_THETA", cfg.EMC_BARREL_MAX_COS_THETA = 0.8);
- declareProperty("NEUTRAL_CLOSE_CHARGED_ANGLE",    cfg.NEUTRAL_CLOSE_CHARGED_ANGLE = 10);
+ declareProperty("NEUTRAL_CLOSE_CHARGED_ANGLE", cfg.NEUTRAL_CLOSE_CHARGED_ANGLE = 10);
 }
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -156,10 +154,13 @@ StatusCode TestAlgo::execute()
   fEvent.event = eventHeader->eventNumber();
   fEvent.time = eventHeader->time();
   fEvent.ntrack =2;
+  double gtheta[2], gphi[2];
   for(int i = 0; i < 2; i++)
   {
     std::list<EvtRecTrack*>::iterator itTrk=nGood.begin();
     std::advance(itTrk, i);
+    gtheta[i]=itTrk->theta();
+    gphi[i]=itTrk->phi();
     fEvent.fill(i,*itTrk);
     //fEvent.Pid.fill(i,*itTrk);
     /*if(eventHeader->runNumber() < 0)
@@ -167,7 +168,8 @@ StatusCode TestAlgo::execute()
       fEvent.McTruth.fill(i,*itTrk,mcParticleCol);
     }*/
   }
-  fEvent.write();
+  if (fabs(theta[0]+theta[1]-PI)<0.15 && fabs(fabs(phi[0]-phi[1])-PI)<0.15) fEvent.write()
+  else return sc;
 
   setFilterPassed(true);
   return StatusCode::SUCCESS;
