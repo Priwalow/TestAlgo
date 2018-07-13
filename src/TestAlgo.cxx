@@ -146,9 +146,9 @@ StatusCode TestAlgo::execute()
   }
 
 
-  if((createGoodChargedTrackList(cfg,evtRecEvent,evtRecTrkCol)).size()!=0) return sc;
+  if(evtRecEvent->totalCharged()!=0) return sc;
 
-  std::list<EvtRecTrack*> nGood = createGoodNeutralTrackList2(cfg,evtRecEvent,evtRecTrkCol);
+  std::list<EvtRecTrack*> nGood = createGoodNeutralTrackList(cfg,evtRecEvent,evtRecTrkCol);
   if(nGood.size()!=2) return sc;
 
   fEvent.run = eventHeader->runNumber();
