@@ -63,11 +63,22 @@ Algorithm(name, pSvcLocator) {
   //Declare the properties
   //declareProperty("Vr0cut", m_vr0cut=1.0);
   //declareProperty("Vz0cut", m_vz0cut=5.0);
-  /*declareProperty("EMC_ENDCUP_MIN_COS_THETA", EMC_ENDCUP_MIN_COS_THETA=0.86);
-  declareProperty("EMC_ENDCUP_MAX_COS_THETA", EMC_ENDCUP_MAX_COS_THETA=0.92);
-  declareProperty("EMC_ENDCUP_MIN_ENERGY", EMC_ENDCUP_MIN_ENERGY=0.05);
-  declareProperty("EMC_BARREL_MAX_COS_THETA", EMC_BARREL_MAX_COS_THETA=0.8);
-  declareProperty("EMC_BARREL_MIN_ENERGY", EMC_BARREL_MIN_ENERGY=0.025);*/
+  declareProperty("MIN_CHARGED_TRACKS", cfg.MIN_CHARGED_TRACKS=2);
+ declareProperty("MAX_CHARGED_TRACKS", cfg.MAX_CHARGED_TRACKS=2);
+ //good charged track configuration
+ declareProperty("IP_MAX_Z",      cfg.IP_MAX_Z = 10.0); //cm
+ declareProperty("IP_MAX_RHO",    cfg.IP_MAX_RHO = 1.0); //cm
+ declareProperty("MAX_COS_THETA", cfg.MAX_COS_THETA = 0.93);
+
+ declareProperty("EMC_ENDCUP_MIN_ENERGY",    cfg.EMC_ENDCUP_MIN_ENERGY = 0.05);
+ declareProperty("EMC_BARREL_MIN_ENERGY",    cfg.EMC_BARREL_MIN_ENERGY = 0.025);
+
+ //endcup calorimeter
+ declareProperty("EMC_ENDCUP_MIN_COS_THETA", cfg.EMC_ENDCUP_MIN_COS_THETA = 0.86);
+ declareProperty("EMC_ENDCUP_MAX_COS_THETA", cfg.EMC_ENDCUP_MAX_COS_THETA = 0.92);
+ //barrel calorimeter
+ declareProperty("EMC_BARREL_MAX_COS_THETA", cfg.EMC_BARREL_MAX_COS_THETA = 0.8);
+ declareProperty("NEUTRAL_CLOSE_CHARGED_ANGLE",    cfg.NEUTRAL_CLOSE_CHARGED_ANGLE = 10);
 }
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -135,15 +146,10 @@ StatusCode TestAlgo::execute()
     return StatusCode::SUCCESS;
   }
 
-  if(evtRecEvent->totalCharged()!=0) return sc;
-  SelectionConfig cfg;
-  cfg.EMC_ENDCUP_MIN_COS_THETA=0.86;
-  cfg.EMC_ENDCUP_MAX_COS_THETA=0.92;
-  cfg.EMC_ENDCUP_MIN_ENERGY=0.05;
-  cfg.EMC_BARREL_MAX_COS_THETA=0.8;
-  cfg.EMC_BARREL_MIN_ENERGY=0.025;
 
-  std::list<EvtRecTrack*> nGood = createGoodNeutralTrackList(cfg,evtRecEvent,evtRecTrkCol);
+  if((createGoodChargedTrackList(cfg,evtRecEvent,evtRecTrkCol)).size()!=0) return sc;
+
+  std::list<EvtRecTrack*> nGood = createGoodNeutralTrackList2(cfg,evtRecEvent,evtRecTrkCol);
   if(nGood.size()!=2) return sc;
 
   fEvent.run = eventHeader->runNumber();
