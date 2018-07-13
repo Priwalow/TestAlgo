@@ -146,9 +146,9 @@ StatusCode TestAlgo::execute()
   }
 
 
-  if(evtRecEvent->totalCharged()!=0) return sc;
+  if((createGoodChargedTrackList(cfg,evtRecEvent,evtRecTrkCol)).size()!=0) return sc;
 
-  std::list<EvtRecTrack*> nGood = createGoodNeutralTrackList(cfg,evtRecEvent,evtRecTrkCol);
+  std::list<EvtRecTrack*> nGood = createGoodNeutralTrackList2(cfg,evtRecEvent,evtRecTrkCol);
   if(nGood.size()!=2) return sc;
 
   fEvent.run = eventHeader->runNumber();
@@ -172,7 +172,7 @@ StatusCode TestAlgo::execute()
       fEvent.McTruth.fill(i,*itTrk,mcParticleCol);
     }*/
   }
-  if (fabs(gtheta[0]+gtheta[1]-PI)<0.15 && fabs(fabs(gphi[0]-gphi[1])-PI)<0.15 && Eg[0]+Eg[1]<cfg.CENTER_MASS_ENERGY+3*sqrt(dE[1]*dE[1]+dE[2]*dE[2])) fEvent.write();
+  if (fabs(gtheta[0]+gtheta[1]-PI)<0.06 && fabs(fabs(gphi[0]-gphi[1])-PI)<0.1 && Eg[0]+Eg[1]<cfg.CENTER_MASS_ENERGY+3*sqrt(dE[1]*dE[1]+dE[2]*dE[2])) fEvent.write();
   else return sc;
 
   setFilterPassed(true);
