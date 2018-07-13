@@ -135,7 +135,7 @@ StatusCode TestAlgo::execute()
     return StatusCode::SUCCESS;
   }
 
-  if(evtRecEvent->totalCharged()!=0 || evtRecEvent->totalTracks()!=2) return sc;
+  if(evtRecEvent->totalCharged()!=0) return sc;
 
   SelectionConfig cfg;
   cfg.EMC_ENDCUP_MIN_COS_THETA=0.86;
@@ -150,9 +150,9 @@ StatusCode TestAlgo::execute()
   fEvent.run = eventHeader->runNumber();
   fEvent.event = eventHeader->eventNumber();
   fEvent.time = eventHeader->time();
-  fEvent.ntrack = 2;
+  fEvent.ntrack = nGood.size();
 
-  for(int i = 0; i <2; i++)
+  for(int i = 0; i < fEvent.ntrack; i++)
   {
     std::list<EvtRecTrack*>::iterator itTrk=nGood.begin();
     std::advance(itTrk, i);
