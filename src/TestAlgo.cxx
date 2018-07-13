@@ -136,7 +136,6 @@ StatusCode TestAlgo::execute()
   }
 
   if(evtRecEvent->totalCharged()!=0) return sc;
-  cout << "Total neutral" << evtRecEvent->totalNeutral() << endl;
   SelectionConfig cfg;
   cfg.EMC_ENDCUP_MIN_COS_THETA=0.86;
   cfg.EMC_ENDCUP_MAX_COS_THETA=0.92;
@@ -146,7 +145,7 @@ StatusCode TestAlgo::execute()
 
   std::list<EvtRecTrack*> nGood = createGoodNeutralTrackList(cfg,evtRecEvent,evtRecTrkCol);
   if(nGood.size()!=2) return sc;
-  
+
   fEvent.run = eventHeader->runNumber();
   fEvent.event = eventHeader->eventNumber();
   fEvent.time = eventHeader->time();
