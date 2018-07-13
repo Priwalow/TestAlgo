@@ -4,6 +4,7 @@
 #include "trkInfo.h"
 
 #include "RootEvent.h"
+#include "SelectionConfig.h"
 
 class TestAlgo : public Algorithm {
 
