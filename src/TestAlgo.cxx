@@ -166,7 +166,6 @@ StatusCode TestAlgo::execute()
     gphi[i]=fEvent.T.phi[i];
     Eg[i]=fEvent.T.E[i];
     dE[i]=(*itTrk)->emcShower()->dE();
-    cout << "dE = " << dE[i] << endl;
     //fEvent.Pid.fill(i,*itTrk);
     /*if(eventHeader->runNumber() < 0)
     {
