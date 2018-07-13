@@ -159,7 +159,7 @@ StatusCode TestAlgo::execute()
   {
     std::list<EvtRecTrack*>::iterator itTrk=nGood.begin();
     std::advance(itTrk, i);
-    RecEmcShower *emcTrk = (RecEmcShower *)itTrk->emcShower();
+    RecEmcShower *emcTrk = (*itTrk)->emcShower();
     gtheta[i]=emcTrk->theta();
     gphi[i]=emcTrk->phi();
     fEvent.fill(i,*itTrk);
@@ -169,7 +169,7 @@ StatusCode TestAlgo::execute()
       fEvent.McTruth.fill(i,*itTrk,mcParticleCol);
     }*/
   }
-  if (fabs(theta[0]+theta[1]-PI)<0.15 && fabs(fabs(phi[0]-phi[1])-PI)<0.15) fEvent.write()
+  if (fabs(gtheta[0]+gtheta[1]-PI)<0.15 && fabs(fabs(gphi[0]-gphi[1])-PI)<0.15) fEvent.write();
   else return sc;
 
   setFilterPassed(true);
