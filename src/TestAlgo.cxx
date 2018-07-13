@@ -159,7 +159,7 @@ StatusCode TestAlgo::execute()
   {
     std::list<EvtRecTrack*>::iterator itTrk=nGood.begin();
     std::advance(itTrk, i);
-    RecEmcShower *emcTrk = itTrk->emcShower()
+    RecEmcShower *emcTrk = (RecEmcShower *)itTrk->emcShower();
     gtheta[i]=emcTrk->theta();
     gphi[i]=emcTrk->phi();
     fEvent.fill(i,*itTrk);
