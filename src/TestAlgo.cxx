@@ -63,6 +63,7 @@ Algorithm(name, pSvcLocator) {
   //Declare the properties
   //declareProperty("Vr0cut", m_vr0cut=1.0);
   //declareProperty("Vz0cut", m_vz0cut=5.0);
+declareProperty("CENTER_MASS_ENERGY", cfg.CENTER_MASS_ENERGY = 3.5390)
  //good charged track configuration
  declareProperty("IP_MAX_Z",      cfg.IP_MAX_Z = 10.0); //cm
  declareProperty("IP_MAX_RHO",    cfg.IP_MAX_RHO = 1.0); //cm
@@ -154,22 +155,23 @@ StatusCode TestAlgo::execute()
   fEvent.event = eventHeader->eventNumber();
   fEvent.time = eventHeader->time();
   fEvent.ntrack =2;
-  double gtheta[2], gphi[2];
+  double gtheta[2], gphi[2], Eg[2];
   for(int i = 0; i < 2; i++)
   {
     std::list<EvtRecTrack*>::iterator itTrk=nGood.begin();
     std::advance(itTrk, i);
-    RecEmcShower *emcTrk = (*itTrk)->emcShower();
-    gtheta[i]=emcTrk->theta();
-    gphi[i]=emcTrk->phi();
+
     fEvent.fill(i,*itTrk);
+    gtheta[i]=fEvent.T.theta[i];
+    gphi[i]=fEvent.T.phi[i];
+    Eg[i]=fEvent.T.E[i];
     //fEvent.Pid.fill(i,*itTrk);
     /*if(eventHeader->runNumber() < 0)
     {
       fEvent.McTruth.fill(i,*itTrk,mcParticleCol);
     }*/
   }
-  if (fabs(gtheta[0]+gtheta[1]-PI)<0.15 && fabs(fabs(gphi[0]-gphi[1])-PI)<0.15) fEvent.write();
+  if (fabs(gtheta[0]+gtheta[1]-PI)<0.15 && fabs(fabs(gphi[0]-gphi[1])-PI)<0.15 && Eg[0]+Eg[1]<cfg.CENTER_MASS_ENERGY) fEvent.write();
   else return sc;
 
   setFilterPassed(true);
