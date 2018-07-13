@@ -150,7 +150,7 @@ StatusCode TestAlgo::execute()
   fEvent.run = eventHeader->runNumber();
   fEvent.event = eventHeader->eventNumber();
   fEvent.time = eventHeader->time();
-  fEvent.ntrack =2);
+  fEvent.ntrack =2;
   for(int i = 0; i < 2; i++)
   {
     std::list<EvtRecTrack*>::iterator itTrk=nGood.begin();
