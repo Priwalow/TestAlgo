@@ -145,13 +145,13 @@ StatusCode TestAlgo::execute()
   cfg.EMC_BARREL_MIN_ENERGY=0.025;
 
   std::list<EvtRecTrack*> nGood = createGoodNeutralTrackList(cfg,evtRecEvent,evtRecTrkCol);
-  if(nGood.size()<2) return sc;
+  if(nGood.size()!=2) return sc;
+
   fEvent.run = eventHeader->runNumber();
   fEvent.event = eventHeader->eventNumber();
   fEvent.time = eventHeader->time();
-  fEvent.ntrack = nGood.size();
-  cout << "Number of good neutral tracks in " << fEvent.event << " event: " << fEvent.ntrack << endl;
-  for(int i = 0; i < fEvent.ntrack; i++)
+  fEvent.ntrack =2);
+  for(int i = 0; i < 2; i++)
   {
     std::list<EvtRecTrack*>::iterator itTrk=nGood.begin();
     std::advance(itTrk, i);
