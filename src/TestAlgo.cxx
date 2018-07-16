@@ -173,8 +173,7 @@ StatusCode TestAlgo::execute()
       fEvent.McTruth.fill(i,*itTrk,mcParticleCol);
     }*/
   }
-  //if (fabs(gtheta[0]+gtheta[1]-PI)<0.06 && fabs(fabs(gphi[0]-gphi[1])-PI)<0.1 && Eg[0]+Eg[1]<cfg.CENTER_MASS_ENERGY+3*sqrt(dE[0]*dE[0]+dE[1]*dE[1])) fEvent.write();
-
+  if (fabs(gtheta[0]+gtheta[1]-PI)<0.06 && fabs(fabs(gphi[0]-gphi[1])-PI)<0.1 && Eg[0]+Eg[1]<cfg.CENTER_MASS_ENERGY+3*sqrt(dE[0]*dE[0]+dE[1]*dE[1])) fEvent.write();
   else return sc;
 
   setFilterPassed(true);
