@@ -63,7 +63,7 @@ Algorithm(name, pSvcLocator) {
   //Declare the properties
   //declareProperty("Vr0cut", m_vr0cut=1.0);
   //declareProperty("Vz0cut", m_vz0cut=5.0);
-declareProperty("CENTER_MASS_ENERGY", cfg.CENTER_MASS_ENERGY = 3.560356);
+declareProperty("CENTER_MASS_ENERGY", cfg.CENTER_MASS_ENERGY = 3.599572);
  //good charged track configuration
  declareProperty("IP_MAX_Z",      cfg.IP_MAX_Z = 10.0); //cm
  declareProperty("IP_MAX_RHO",    cfg.IP_MAX_RHO = 1.0); //cm
