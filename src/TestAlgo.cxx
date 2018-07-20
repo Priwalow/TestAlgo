@@ -155,7 +155,7 @@ StatusCode TestAlgo::execute()
   fEvent.event = eventHeader->eventNumber();
   fEvent.time = eventHeader->time();
   fEvent.ntrack =2;
-  double gtheta[2], gphi[2], Eg[2], dE[2];
+  double gtheta[2], gphi[2], Eg[2];
   for(int i = 0; i < 2; i++)
   {
     std::list<EvtRecTrack*>::iterator itTrk=nGood.begin();
@@ -165,7 +165,6 @@ StatusCode TestAlgo::execute()
     gtheta[i]=fEvent.T.theta[i];
     gphi[i]=fEvent.T.phi[i];
     Eg[i]=fEvent.T.E[i];
-    dE[i]=(*itTrk)->emcShower()->dE();
 
     //fEvent.Pid.fill(i,*itTrk);
     /*if(eventHeader->runNumber() < 0)
@@ -173,7 +172,7 @@ StatusCode TestAlgo::execute()
       fEvent.McTruth.fill(i,*itTrk,mcParticleCol);
     }*/
   }
-  if (fabs(gtheta[0]+gtheta[1]-PI)<0.06 && fabs(fabs(gphi[0]-gphi[1])-PI)<0.1 && Eg[0]+Eg[1]<cfg.CENTER_MASS_ENERGY+3*sqrt(dE[0]*dE[0]+dE[1]*dE[1])) fEvent.write();
+  if (fabs(gtheta[0]+gtheta[1]-PI)<0.1 && fabs(fabs(gphi[0]-gphi[1])-PI)<0.2) fEvent.write();
   else return sc;
 
   setFilterPassed(true);
